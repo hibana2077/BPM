@@ -44,8 +44,17 @@ class TimmtBPM(nn.Module):
 
     def forward_features(self, x):
         feats = self.backbone.forward_features(x)
+        # Prefer model's own head pooling when available (e.g., ViT/Swin)
+        if hasattr(self.backbone, 'forward_head'):
+            # pre_logits=True returns pooled features before classifier
+            emb = self.backbone.forward_head(feats, pre_logits=True)
+            return emb
+        # Fallback: pool CNN-style features
         if feats.ndim == 4:
             feats = feats.mean([2, 3])
+        elif feats.ndim == 3:
+            # (B, N, C) -> global token average
+            feats = feats.mean(dim=1)
         return feats
 
     def forward_projected(self, x):
@@ -56,6 +65,13 @@ class TimmtBPM(nn.Module):
         return self.backbone(x)
 
     def forward_with_head(self, x):
-        feats = self.forward_features(x)
-        logits = self.backbone.get_classifier()(feats) if hasattr(self.backbone, 'get_classifier') else self.backbone(x)
-        return logits, feats
+        # Compute both logits and pooled embedding in a model-aware way
+        if hasattr(self.backbone, 'forward_head'):
+            raw = self.backbone.forward_features(x)
+            logits = self.backbone.forward_head(raw, pre_logits=False)
+            emb = self.backbone.forward_head(raw, pre_logits=True)
+            return logits, emb
+        # Fallback for backbones without forward_head
+        emb = self.forward_features(x)
+        logits = self.backbone.get_classifier()(emb) if hasattr(self.backbone, 'get_classifier') else self.backbone(x)
+        return logits, emb
