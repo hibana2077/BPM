@@ -16,4 +16,4 @@ source /scratch/rp06/sl5952/BPM/.venv/bin/activate
 
 cd ..
 # Run training with BPM models
-python3 train.py --dataset cotton80 --model efficientnet_b5.sw_in12k_ft_in1k --epochs 50 --img-size 448 >> results/cotton80_efficientnet_b5_448.log
+python3 train.py --dataset cotton80 --model vit_base_patch16_224.augreg2_in21k_ft_in1k --epochs 50 --img-size 336 >> results/cotton80_vit_base_patch16_224_augreg2_in21k_ft_in1k.log
