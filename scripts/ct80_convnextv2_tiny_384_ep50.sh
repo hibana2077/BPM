@@ -18,3 +18,4 @@ cd ..
 # Run training with BPM models
 python3 train.py --dataset cotton80 --model convnextv2_tiny.fcmae_ft_in22k_in1k_384 --epochs 50 --img-size 384 >> results/cotton80_convnextv2_tiny_384.log
 
+# 2.00 Val acc

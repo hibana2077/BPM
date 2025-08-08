@@ -17,3 +17,4 @@ source /scratch/rp06/sl5952/BPM/.venv/bin/activate
 cd ..
 # Run training with BPM models
 python3 train.py --dataset cotton80 --model resnet50 --epochs 50 --img-size 224 >> results/cotton80_resnet50_224.log
+# 27.50 Val acc
